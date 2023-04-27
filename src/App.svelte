@@ -1,56 +1,111 @@
 <script lang="ts">
-  import { getEstados, getImagemBandeiraURL } from "./api/estados";
-  import { state } from "./stores";
+  import CityPicker from "./lib/CityPicker.svelte";
+  import SchoolPicker from "./lib/SchoolPicker.svelte";
+  import StatePicker from "./lib/StatePicker.svelte";
+  import { nextPage, pageIndexStore, previousPage } from "./stores";
+
+  const components = [StatePicker, CityPicker, SchoolPicker];
+
+  let index = 0;
+
+  $: component = components[index];
+
+  pageIndexStore.subscribe((newIndex) => {
+    if (newIndex < 0) newIndex = 0;
+    if (newIndex > components.length) newIndex = components.length;
+
+    index = newIndex;
+  });
 </script>
 
-<h1>Qual seu estado?</h1>
+<div class="region previous" on:click={previousPage} on:keydown={previousPage}>
+  <div class="arrow" />
+</div>
 
-<section class="states_container">
-  {#await getEstados()}
-    <p>Carregando...</p>
-  {:then estados}
-    {#each estados as estado}
-      <div class="state">
-        <img
-          src={getImagemBandeiraURL(estado.sigla)}
-          alt="Bandeira do {estado.nome}"
-        />
-        <p>{estado.nome}</p>
-      </div>
-    {/each}
-  {:catch error}
-    <h2>Erro ao carregar. Tente novamente.</h2>
-  {/await}
-</section>
+<svelte:component this={component} />
+
+<!-- <div class="region next" on:click={nextPage} on:keydown={nextPage}>
+  <div class="arrow" />
+</div> -->
 
 <style lang="scss">
-  section.states_container {
+  .region {
+    cursor: pointer;
+
+    position: fixed;
+    top: 0;
+
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
 
-    gap: 1rem;
+    width: 5%;
+    height: 100vh;
+
+    opacity: 0;
+
+    transition: opacity 200ms;
+
+    &.previous {
+      left: 0;
+      background-image: linear-gradient(to right, #00000044, #00000000);
+    }
+
+    // &.next {
+    //   right: 0;
+    //   background-image: linear-gradient(to left, #00000044, #00000000);
+    // }
+
+    .arrow {
+      transform: translateX(-10rem);
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &:hover .arrow {
+      transform: translateX(2rem);
+    }
   }
 
-  div.state {
-    min-width: 15rem;
-    width: 15rem;
-    max-width: 15rem;
+  .arrow {
+    width: 1.5em;
+    height: 0.3em;
 
-    flex: 1;
+    font-size: 2rem;
 
-    background: #303030;
-    border-radius: 1rem;
+    position: relative;
+    transition: transform 200ms ease;
 
-    overflow: hidden;
+    &::before,
+    &::after {
+      content: "";
 
-    box-shadow: 0 0 5px 5px #202020;
+      display: block;
+      position: absolute;
 
-    img {
-      width: 100%;
-      height: auto;
+      background-color: white;
+      top: 0;
+      left: -0.4em;
+
+      width: 1em;
+      height: 0.3em;
+
+      z-index: 1;
     }
+
+    &::before {
+      top: -0.25em;
+      rotate: -45deg;
+    }
+
+    &::after {
+      top: 0.25em;
+      rotate: 45deg;
+    }
+
+    background: white;
   }
 </style>
