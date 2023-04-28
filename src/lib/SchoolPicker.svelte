@@ -1,15 +1,12 @@
 <script lang="ts">
     import { locationStore } from "../stores";
+    import SearchBar from "./SearchBar.svelte";
 </script>
 
 <main>
     <section class="search">
         <h1>Pesquisa de escola</h1>
-        <input
-            type="text"
-            class="searchbox"
-            placeholder="Pesquise pelo nome da escola"
-        />
+        <SearchBar />
     </section>
 
     <section class="listing" />
@@ -43,15 +40,6 @@
 
         h1 {
             font-size: 1.8rem;
-        }
-
-        .searchbox {
-            padding: 1.2rem 1.5rem;
-
-            font-size: 1.2rem;
-
-            outline-style: solid;
-            outline-width: 0.1px;
         }
     }
 </style>

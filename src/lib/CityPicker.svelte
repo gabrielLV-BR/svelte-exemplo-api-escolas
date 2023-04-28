@@ -2,12 +2,26 @@
     import type { Estado } from "../api/estados";
 
     import { getCidadesDeEstado, type Cidade } from "../api/escolas";
-    import { locationStore, nextPage, type Local } from "../stores";
+    import {
+        locationStore,
+        nextPage,
+        type Local,
+        previousPage,
+    } from "../stores";
 
     let estado: Estado = null;
     let cidade: Cidade = null;
 
     let cidades: Cidade[] = [];
+
+    let enable_manual_input = false;
+    let nome_cidade = "";
+
+    setTimeout(() => {
+        if (cidades.length == 0) {
+            enable_manual_input = true;
+        }
+    }, 5000);
 
     locationStore.subscribe(async (value: Local) => {
         if (!value) return;
@@ -18,14 +32,23 @@
         cidades = await getCidadesDeEstado(novoEstado);
     });
 
-    function clearEstado() {
+    function escolherEstado() {
         locationStore.set({
             estado: null,
             cidade: null,
         });
+
+        previousPage();
     }
 
     function next() {
+        if (enable_manual_input && nome_cidade != "") {
+            cidade = {
+                id: 0,
+                nome: nome_cidade,
+            };
+        }
+
         locationStore.set({
             estado,
             cidade,
@@ -43,6 +66,16 @@
 
         {#if cidades.length == 0}
             <p class="loading">Carregando...</p>
+
+            {#if enable_manual_input}
+                <input
+                    type="text"
+                    bind:value={nome_cidade}
+                    placeholder="Digite o nome da cidade"
+                    name=""
+                    id=""
+                />
+            {/if}
         {:else}
             <select bind:value={cidade} name="cidade" id="cidade">
                 {#each cidades as cidade}
@@ -52,13 +85,17 @@
         {/if}
 
         <hr />
-        <button disabled={cidade == null} class="next" on:click={next}>
+        <button
+            disabled={cidade == null && nome_cidade == ""}
+            class="next"
+            on:click={next}
+        >
             Próximo
             <div class="arrow" />
         </button>
     </main>
     <footer>
-        <a href="_" on:click|preventDefault={clearEstado}>
+        <a href="_" on:click|preventDefault={escolherEstado}>
             Escolher outro estado
         </a>
     </footer>
@@ -99,7 +136,7 @@
     }
 
     .loading {
-        color: #202020;
+        color: #606060;
     }
 
     .next {
