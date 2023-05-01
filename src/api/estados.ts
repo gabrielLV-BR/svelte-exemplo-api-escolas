@@ -20,6 +20,12 @@ export async function getEstados(): Promise<Array<Estado>> {
     return data;
 }
 
-export function getImagemBandeiraURL(sigla: string): string {
+export function getURLBandeira(sigla: string): string {
     return BANDEIRAS_ENDPOINT + sigla.toUpperCase() + ".png";
+}
+
+export function ordenarEstados(a: Estado, b: Estado): number {
+    if (a.nome < b.nome) return -1;
+    if (a.nome > b.nome) return 1;
+    return 0;
 }

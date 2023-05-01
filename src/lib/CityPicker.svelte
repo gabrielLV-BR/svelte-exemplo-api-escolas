@@ -1,201 +1,122 @@
 <script lang="ts">
+    import { getCidadesDeEstado, type Cidade } from "../api/escolas";
     import type { Estado } from "../api/estados";
 
-    import { getCidadesDeEstado, type Cidade } from "../api/escolas";
-    import {
-        locationStore,
-        nextPage,
-        type Local,
-        previousPage,
-    } from "../stores";
+    export const estado: Estado = null;
 
-    let estado: Estado = null;
-    let cidade: Cidade = null;
+    export let cidade: Cidade = null;
+    export let setCidade: (e: Cidade) => void = () => {};
 
     let cidades: Cidade[] = [];
+    let open: boolean = false;
 
-    let enable_manual_input = false;
-    let nome_cidade = "";
+    const toggleOpen = () => (open = !open);
 
-    setTimeout(() => {
-        if (cidades.length == 0) {
-            enable_manual_input = true;
-        }
-    }, 5000);
-
-    locationStore.subscribe(async (value: Local) => {
-        if (!value) return;
-
-        const { estado: novoEstado } = value;
-
-        estado = novoEstado;
-        cidades = await getCidadesDeEstado(novoEstado);
-    });
-
-    function escolherEstado() {
-        locationStore.set({
-            estado: null,
-            cidade: null,
-        });
-
-        previousPage();
-    }
-
-    function next() {
-        if (enable_manual_input && nome_cidade != "") {
-            cidade = {
-                id: 0,
-                nome: nome_cidade,
-            };
-        }
-
-        locationStore.set({
-            estado,
-            cidade,
-        });
-
-        nextPage();
-    }
+    $: getCidadesDeEstado(estado).then((c) => (cidades = c));
 </script>
 
-<section>
-    <main>
-        <p>Estado de {estado.nome} selecionado.</p>
+<div class="picker" class:open>
+    <button class="header" on:click={toggleOpen}>
+        Escolha sua cidade
 
-        <p>Selecione sua cidade</p>
-
-        {#if cidades.length == 0}
-            <p class="loading">Carregando...</p>
-
-            {#if enable_manual_input}
-                <input
-                    type="text"
-                    bind:value={nome_cidade}
-                    placeholder="Digite o nome da cidade"
-                    name=""
-                    id=""
-                />
-            {/if}
-        {:else}
-            <select bind:value={cidade} name="cidade" id="cidade">
-                {#each cidades as cidade}
-                    <option value={cidade}>{cidade.nome}</option>
-                {/each}
-            </select>
+        {#if estado}
+            <span class="selected">
+                - {estado.nome}
+            </span>
         {/if}
+    </button>
 
-        <hr />
-        <button
-            disabled={cidade == null && nome_cidade == ""}
-            class="next"
-            on:click={next}
-        >
-            Próximo
-            <div class="arrow" />
-        </button>
-    </main>
-    <footer>
-        <a href="_" on:click|preventDefault={escolherEstado}>
-            Escolher outro estado
-        </a>
-    </footer>
-</section>
+    <div class="pick-area">
+        <div class="options">
+            {#each cidades as cidade}
+                <button class="option" on:click={() => setCidade(cidade)}>
+                    {cidade.nome}
+                </button>
+            {:else}
+                <h2>Carregando</h2>
+            {/each}
+        </div>
+    </div>
+</div>
 
 <style lang="scss">
-    main {
-        background-color: #343434;
-        border-radius: 0.2rem;
-
-        width: 80%;
-        height: 80%;
-        padding: 10rem;
-
-        box-shadow: 0 0 5px 5px #00000020;
-
-        gap: 1rem;
-
-        hr {
-            width: 100%;
-        }
-
-        * {
-            margin: 0;
-        }
-    }
-
-    main,
-    section {
+    .picker,
+    .pick-area .options {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-items: center;
-    }
-
-    section {
-        gap: 2rem;
-    }
-
-    .loading {
-        color: #606060;
-    }
-
-    .next {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
         justify-content: center;
-        gap: 0.4rem;
 
-        background-color: #22aacc;
-
-        &:disabled {
-            color: #333333;
-            background-color: #808080;
-        }
-
-        &:not(:disabled):hover {
-            background-color: #55ccff;
-
-            .arrow {
-                transform: translateX(5px);
-            }
-        }
+        width: 100%;
     }
 
-    .arrow {
-        width: 20px;
-        height: 3px;
+    .picker {
+        background-color: #121212;
+        border-radius: 0.5rem;
+
         position: relative;
 
-        transition: transform 200ms ease;
+        .header {
+            font-size: 1.2rem;
 
-        &::before,
-        &::after {
-            content: "";
+            width: 100%;
 
-            display: block;
-            position: absolute;
+            text-align: left;
 
-            background-color: white;
-            top: 0;
-            right: -1px;
-
-            width: 10px;
-            height: 3px;
-
-            z-index: 1;
+            background-color: transparent;
+            align-self: flex-start;
         }
 
-        &::before {
-            top: -3px;
-            rotate: 45deg;
+        .header .selected {
+            font-style: italic;
+            color: #898989;
         }
 
-        &::after {
-            top: 3px;
-            rotate: -45deg;
+        .option {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 2rem;
+            width: 100%;
+            border-radius: none;
         }
 
-        background: white;
+        .option img {
+            height: 1rem;
+            width: auto;
+        }
+    }
+
+    .pick-area {
+        position: absolute;
+        left: 0;
+        top: 100%;
+
+        width: 100%;
+
+        border-bottom-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+
+        background-color: #090909;
+
+        .option {
+            border-radius: 0;
+        }
+
+        transition: height 200ms ease;
+        height: 0;
+        margin: 0;
+
+        overflow: scroll;
+    }
+
+    .open {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+
+        .pick-area {
+            height: 15rem;
+        }
     }
 </style>

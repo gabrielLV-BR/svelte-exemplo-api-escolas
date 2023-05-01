@@ -45,8 +45,12 @@ export type Cidade = {
 };
 
 export async function getCidadesDeEstado(estado: Estado): Promise<Array<Cidade>> {
+    if (estado == null) return [];
+
     const response = await fetch(ESCOLAS_ENDPOINT + `cidades/${estado.sigla.toLowerCase()}`);
     const data: string[] = await response.json();
+
+    console.log(data);
 
     return data.map(line => {
         const [id, nome] = line.split(":");

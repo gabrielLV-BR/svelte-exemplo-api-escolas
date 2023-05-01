@@ -1,32 +1,43 @@
 <script lang="ts">
+  import type { Cidade } from "./api/escolas";
+  import type { Estado } from "./api/estados";
   import CityPicker from "./lib/CityPicker.svelte";
   import SchoolPicker from "./lib/SchoolPicker.svelte";
   import StatePicker from "./lib/StatePicker.svelte";
   import { nextPage, pageIndexStore, previousPage } from "./stores";
 
-  const components = [StatePicker, CityPicker, SchoolPicker];
+  // const components = [StatePicker, CityPicker, SchoolPicker];
 
-  let index = 0;
+  // let index = 0;
 
-  $: component = components[index];
+  // $: component = components[index];
 
-  pageIndexStore.subscribe((newIndex) => {
-    if (newIndex < 0) newIndex = 0;
-    if (newIndex > components.length) newIndex = components.length;
+  // pageIndexStore.subscribe((newIndex) => {
+  //   if (newIndex < 0) newIndex = 0;
+  //   if (newIndex > components.length) newIndex = components.length;
 
-    index = newIndex;
-  });
+  //   index = newIndex;
+  // });
+
+  let estado: Estado = null;
+  const setEstado = (e: Estado) => (estado = e);
+
+  let cidade: Cidade = null;
+  const setCidade = (c: Cidade) => (cidade = c);
 </script>
 
 <div class="region previous" on:click={previousPage} on:keydown={previousPage}>
   <div class="arrow" />
 </div>
 
-<svelte:component this={component} />
+<main>
+  <StatePicker {estado} {setEstado} />
 
-<!-- <div class="region next" on:click={nextPage} on:keydown={nextPage}>
-  <div class="arrow" />
-</div> -->
+  {#if estado}
+    <p>Estado selecionado {estado.nome}</p>
+    <CityPicker {cidade} {setCidade} />
+  {/if}
+</main>
 
 <style lang="scss">
   .region {

@@ -1,69 +1,134 @@
 <script lang="ts">
     import {
         getEstados,
-        getImagemBandeiraURL,
         type Estado,
+        getURLBandeira,
+        ordenarEstados,
     } from "../api/estados";
 
-    import { locationStore, nextPage, pageIndexStore } from "../stores";
+    export let estado: Estado = null;
+    export let setEstado: (e: Estado) => void = () => {};
 
-    function selectState(estado: Estado) {
-        locationStore.update((state) => {
-            return { ...state, estado };
-        });
+    let estados: Estado[] = [];
+    let open: boolean = false;
 
-        nextPage();
-    }
+    const toggleOpen = () => (open = !open);
+
+    getEstados()
+        .then((e) => (estados = e.sort(ordenarEstados)))
+        .catch(() => alert("Erro ao carregar os estados"));
 </script>
 
-<h1>Qual seu estado?</h1>
+<div class="picker" class:open>
+    <button class="header" on:click={toggleOpen}>
+        Escolha seu estado
 
-<section class="states_container">
-    {#await getEstados()}
-        <p>Carregando...</p>
-    {:then estados}
-        {#each estados as estado}
-            <button class="state" on:click={() => selectState(estado)}>
-                <img
-                    src={getImagemBandeiraURL(estado.sigla)}
-                    alt="Bandeira do {estado.nome}"
-                />
-                <p>{estado.nome}</p>
-            </button>
-        {/each}
-    {:catch error}
-        <h2>Erro ao carregar. Tente novamente.</h2>
-    {/await}
-</section>
+        {#if estado}
+            <span class="selected">
+                - {estado.nome}
+            </span>
+        {/if}
+    </button>
+
+    <div class="pick-area">
+        <div class="options">
+            {#each estados as estado}
+                <button class="option" on:click={() => setEstado(estado)}>
+                    <img
+                        src={getURLBandeira(estado.sigla)}
+                        alt="Bandeira de {estado.nome}"
+                    />
+                    <span>
+                        {estado.nome}
+                    </span>
+                </button>
+            {:else}
+                <p>Carregando</p>
+            {/each}
+        </div>
+    </div>
+</div>
 
 <style lang="scss">
-    section.states_container {
+    .picker,
+    .pick-area .options {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        flex-wrap: wrap;
 
-        gap: 1rem;
+        width: 100%;
     }
 
-    .state {
-        min-width: 15rem;
-        width: 15rem;
-        max-width: 15rem;
+    .picker {
+        background-color: #121212;
+        border-radius: 0.5rem;
 
-        flex: 1;
+        position: relative;
 
-        background: #303030;
-        border-radius: 1rem;
+        .header {
+            font-size: 1.2rem;
 
-        overflow: hidden;
-
-        box-shadow: 0 0 5px 5px #202020;
-
-        img {
             width: 100%;
-            height: auto;
+
+            text-align: left;
+
+            background-color: transparent;
+            align-self: flex-start;
+        }
+
+        .header .selected {
+            font-style: italic;
+            color: #898989;
+        }
+
+        .option {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 2rem;
+            width: 100%;
+            border-radius: none;
+        }
+
+        .option img {
+            height: 1rem;
+            width: auto;
+        }
+    }
+
+    .pick-area {
+        position: absolute;
+        left: 0;
+        top: 100%;
+
+        z-index: 1;
+
+        width: 100%;
+
+        border-bottom-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+
+        background-color: #090909;
+
+        .option {
+            border-radius: 0;
+        }
+
+        transition: height 200ms ease;
+        height: 0;
+        margin: 0;
+
+        overflow: scroll;
+    }
+
+    .open {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+
+        .pick-area {
+            height: 15rem;
         }
     }
 </style>
