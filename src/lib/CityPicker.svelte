@@ -2,7 +2,7 @@
     import { getCidadesDeEstado, type Cidade } from "../api/escolas";
     import type { Estado } from "../api/estados";
 
-    export const estado: Estado = null;
+    export let estado: Estado = null;
 
     export let cidade: Cidade = null;
     export let setCidade: (e: Cidade) => void = () => {};

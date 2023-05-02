@@ -2,6 +2,7 @@
   import type { Cidade } from "./api/escolas";
   import type { Estado } from "./api/estados";
   import CityPicker from "./lib/CityPicker.svelte";
+  import CustomPicker from "./lib/CustomPicker.svelte";
   import SchoolPicker from "./lib/SchoolPicker.svelte";
   import StatePicker from "./lib/StatePicker.svelte";
   import { nextPage, pageIndexStore, previousPage } from "./stores";
