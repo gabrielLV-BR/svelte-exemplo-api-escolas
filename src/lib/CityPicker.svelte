@@ -1,6 +1,30 @@
 <script lang="ts">
     import { getCidadesDeEstado, type Cidade } from "../api/escolas";
     import type { Estado } from "../api/estados";
+    import CustomPicker from "./CustomPicker.svelte";
+
+    export let estado: Estado;
+    export let cidade: Cidade;
+    export let setCidade: (c: Cidade) => void;
+
+    let cidades: Cidade[] = [];
+
+    getCidadesDeEstado(estado).then((c) => (cidades = c));
+
+    const getValueTitle = (c: Cidade) => c.nome;
+</script>
+
+<CustomPicker
+    value={cidade}
+    setValue={setCidade}
+    possible_values={cidades}
+    title="Escolha a cidade"
+    {getValueTitle}
+/>
+
+<!-- <script lang="ts">
+    import { getCidadesDeEstado, type Cidade } from "../api/escolas";
+    import type { Estado } from "../api/estados";
 
     export let estado: Estado = null;
 
@@ -119,4 +143,4 @@
             height: 15rem;
         }
     }
-</style>
+</style> -->

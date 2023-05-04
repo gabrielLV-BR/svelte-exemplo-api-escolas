@@ -36,7 +36,7 @@
 
   {#if estado}
     <p>Estado selecionado {estado.nome}</p>
-    <CityPicker {cidade} {setCidade} />
+    <CityPicker {estado} {cidade} {setCidade} />
   {/if}
 </main>
 
