@@ -9,7 +9,7 @@
 
     let cidades: Cidade[] = [];
 
-    getCidadesDeEstado(estado).then((c) => (cidades = c));
+    $: getCidadesDeEstado(estado).then((c) => (cidades = c));
 
     const getValueTitle = (c: Cidade) => c.nome;
 </script>

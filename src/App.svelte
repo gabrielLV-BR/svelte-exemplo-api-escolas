@@ -1,11 +1,12 @@
 <script lang="ts">
-  import type { Cidade } from "./api/escolas";
+  import type { Cidade, Escola } from "./api/escolas";
   import type { Estado } from "./api/estados";
   import CityPicker from "./lib/CityPicker.svelte";
   import CustomPicker from "./lib/CustomPicker.svelte";
   import SchoolPicker from "./lib/SchoolPicker.svelte";
+  import SearchBar from "./lib/SearchBar.svelte";
   import StatePicker from "./lib/StatePicker.svelte";
-  import { nextPage, pageIndexStore, previousPage } from "./stores";
+  import { previousPage } from "./stores";
 
   // const components = [StatePicker, CityPicker, SchoolPicker];
 
@@ -25,6 +26,14 @@
 
   let cidade: Cidade = null;
   const setCidade = (c: Cidade) => (cidade = c);
+
+  $: search_disabled = !(estado && cidade);
+
+  let nome_da_escola = "";
+  const setNomeDaEscola = (n: string) => (nome_da_escola = n);
+
+  let escola: Escola = null;
+  const setEscola = (e: Escola) => (escola = e);
 </script>
 
 <div class="region previous" on:click={previousPage} on:keydown={previousPage}>
@@ -32,15 +41,71 @@
 </div>
 
 <main>
-  <StatePicker {estado} {setEstado} />
-
-  {#if estado}
-    <p>Estado selecionado {estado.nome}</p>
+  <div class="pickers">
+    <StatePicker {estado} {setEstado} />
     <CityPicker {estado} {cidade} {setCidade} />
-  {/if}
+  </div>
+
+  <SearchBar
+    disabled={search_disabled}
+    title="Procurar escola"
+    setValue={setNomeDaEscola}
+  />
+
+  <p>O nome da escola é {nome_da_escola}</p>
+  <!-- {#if estado && cidade}
+  {/if} -->
 </main>
 
 <style lang="scss">
+  main {
+    position: relative;
+  }
+
+  .pickers {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 1rem;
+    margin: 1rem;
+  }
+
+  .pickers.ghost {
+    opacity: 0.5;
+    position: relative;
+    top: -3.6rem;
+    left: 0;
+
+    z-index: 2;
+  }
+
+  .ghost-element {
+    width: 100%;
+    min-width: 20rem;
+    height: 3.6rem;
+
+    background-color: red;
+
+    z-index: -1;
+  }
+
+  .pickers.all-picked {
+    flex-direction: row;
+    height: fit-content;
+    gap: 1rem;
+    padding: 0.5rem;
+
+    max-width: 100%;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+  }
+
   .region {
     cursor: pointer;
 

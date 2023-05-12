@@ -1,56 +1,64 @@
 <script lang="ts">
-    import searchSVG from "../assets/search.svg";
+  import searchSVG from "../assets/search.svg";
 
-    let nome_escola = "";
+  export let title: string = "Pesquise";
+  export let setValue: (v: string) => void = () => {};
+  export let disabled = false;
 
-    function buscarEscola() {}
+  let value = "";
+
+  $: setValue(value);
 </script>
 
-<div class="searchbox">
-    <input
-        bind:value={nome_escola}
-        type="text"
-        placeholder="Pesquise pelo nome da escola"
-    />
+<div class="searchbox" class:disabled>
+  <input bind:value type="text" placeholder={title} {disabled} />
 
-    <button on:click={buscarEscola}>
-        <img class="icon" src={searchSVG} alt="" draggable="false" />
-    </button>
+  <button {disabled}>
+    <img class="icon" src={searchSVG} alt="" draggable="false" />
+  </button>
 </div>
 
 <style lang="scss">
-    .searchbox {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
+  .searchbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 
-        background: #343434;
+    background: #343434;
 
-        border-radius: 1.8rem;
+    height: 1.5rem;
+    border-radius: 2rem;
 
-        input[type="text"] {
-            padding-left: 2rem;
-            font-size: 1.2rem;
+    padding: 1rem;
 
-            background: transparent;
+    input[type="text"] {
+      font-size: 1.2rem;
 
-            border: none;
-            outline: none;
-        }
+      background: transparent;
 
-        button {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            background: transparent;
-        }
-
-        .icon {
-            width: 2rem;
-            margin: 1rem;
-
-            filter: invert(0.5);
-        }
+      border: none;
+      outline: none;
     }
+
+    &.disabled {
+      filter: brightness(0.8);
+    }
+
+    button {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    button:disabled {
+      cursor: inherit;
+    }
+
+    .icon {
+      height: 2rem;
+      filter: invert(0.5);
+    }
+  }
 </style>
