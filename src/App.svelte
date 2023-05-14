@@ -2,30 +2,33 @@
   import type { Cidade, Escola } from "./api/escolas";
   import type { Estado } from "./api/estados";
   import CityPicker from "./lib/CityPicker.svelte";
-  import CustomPicker from "./lib/CustomPicker.svelte";
-  import SchoolPicker from "./lib/SchoolPicker.svelte";
+  import SchoolSearcher from "./lib/SchoolSearcher.svelte";
   import SearchBar from "./lib/SearchBar.svelte";
   import StatePicker from "./lib/StatePicker.svelte";
-  import { previousPage } from "./stores";
-
-  // const components = [StatePicker, CityPicker, SchoolPicker];
-
-  // let index = 0;
-
-  // $: component = components[index];
-
-  // pageIndexStore.subscribe((newIndex) => {
-  //   if (newIndex < 0) newIndex = 0;
-  //   if (newIndex > components.length) newIndex = components.length;
-
-  //   index = newIndex;
-  // });
+  import { locationStore, previousPage } from "./stores";
 
   let estado: Estado = null;
-  const setEstado = (e: Estado) => (estado = e);
+  const setEstado = (e: Estado) => {
+    estado = e;
+    locationStore.update((l) => {
+      return {
+        ...l,
+        estado: e,
+      };
+    });
+  };
 
   let cidade: Cidade = null;
-  const setCidade = (c: Cidade) => (cidade = c);
+  const setCidade = (c: Cidade) => {
+    cidade = c;
+
+    locationStore.update((l) => {
+      return {
+        ...l,
+        cidade: c,
+      };
+    });
+  };
 
   $: search_disabled = !(estado && cidade);
 
@@ -41,20 +44,22 @@
 </div>
 
 <main>
-  <div class="pickers">
-    <StatePicker {estado} {setEstado} />
-    <CityPicker {estado} {cidade} {setCidade} />
+  <div class="spacing" />
+
+  <div class="middle">
+    <div class="pickers">
+      <StatePicker {estado} {setEstado} />
+      <CityPicker {estado} {cidade} {setCidade} />
+    </div>
+
+    <SearchBar
+      disabled={search_disabled}
+      title="Procurar escola"
+      setValue={setNomeDaEscola}
+    />
   </div>
 
-  <SearchBar
-    disabled={search_disabled}
-    title="Procurar escola"
-    setValue={setNomeDaEscola}
-  />
-
-  <p>O nome da escola é {nome_da_escola}</p>
-  <!-- {#if estado && cidade}
-  {/if} -->
+  <SchoolSearcher school_name={nome_da_escola} />
 </main>
 
 <style lang="scss">
@@ -72,38 +77,6 @@
 
     gap: 1rem;
     margin: 1rem;
-  }
-
-  .pickers.ghost {
-    opacity: 0.5;
-    position: relative;
-    top: -3.6rem;
-    left: 0;
-
-    z-index: 2;
-  }
-
-  .ghost-element {
-    width: 100%;
-    min-width: 20rem;
-    height: 3.6rem;
-
-    background-color: red;
-
-    z-index: -1;
-  }
-
-  .pickers.all-picked {
-    flex-direction: row;
-    height: fit-content;
-    gap: 1rem;
-    padding: 0.5rem;
-
-    max-width: 100%;
-
-    position: fixed;
-    left: 0;
-    top: 0;
   }
 
   .region {
