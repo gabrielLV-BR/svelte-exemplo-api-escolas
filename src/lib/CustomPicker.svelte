@@ -22,6 +22,8 @@
   let open: boolean = false;
   let element: HTMLDivElement;
 
+  let filter_text = "";
+
   const toggleOpen = () => (open = !open);
   const close = (event: any) => (open = false);
 
@@ -38,7 +40,15 @@
     }
   }
 
-  const setupClickOutside = () => {
+  // const pressedKey = (e: KeyboardEvent) => {
+  //   const key = e.key.toLowerCase();
+
+  //   if (key == "escape") {
+  //     filter_text = filter_text.slice(0, filter_text.length - 1);
+  //   }
+  // };
+
+  const setupInputs = () => {
     window.addEventListener("click", handleClick);
   };
 
@@ -46,10 +56,11 @@
     window.removeEventListener("click", handleClick);
   };
 
-  onMount(setupClickOutside);
+  onMount(setupInputs);
   onDestroy(cleanup);
 </script>
 
+{filter_text}
 <div class="picker" class:open bind:this={element}>
   <button class="header" use:clickOutside on:click={toggleOpen}>
     <span class="text">

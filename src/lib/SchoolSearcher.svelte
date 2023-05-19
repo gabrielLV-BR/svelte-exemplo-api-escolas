@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from "svelte";
   import { buscaEscolas, type Cidade, type Escola } from "../api/escolas";
   import { locationStore, type Local } from "../stores";
-  import SchoolDisplay from "./SchoolListing.svelte";
+  import ResultContainer from "./ResultContainer.svelte";
 
   export let school_name = "";
 
@@ -59,7 +59,7 @@
         <h1>Carregando escolas...</h1>
       </div>
     {:then escolas}
-      <SchoolDisplay {escolas} />
+      <ResultContainer {escolas} />
     {:catch error}
       <div class="awaiting">
         <h1>Erro ao encontrar a escola</h1>

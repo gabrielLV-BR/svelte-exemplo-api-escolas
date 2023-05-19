@@ -80,20 +80,17 @@
 
     overflow: auto;
 
-    width: 100%;
-    height: 100%;
-
     header {
       cursor: pointer;
 
       flex-direction: row;
 
-      position: fixed;
-      right: calc(50% - 7rem);
-      top: 1rem;
-
       width: 5rem;
       height: 3rem;
+
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
 
       span img {
         height: 2rem;

@@ -39,6 +39,8 @@
     input[type="text"] {
       font-size: 1.2rem;
 
+      width: 100%;
+
       background: transparent;
 
       border: none;
