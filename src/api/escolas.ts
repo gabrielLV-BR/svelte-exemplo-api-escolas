@@ -11,10 +11,10 @@ export type Escola = {
   cidade: string;
   estado: string;
   regiao: Regiao;
-  // situacaoFuncionamento: number;
-  // dependenciaAdministrativa: number;
-  // idebAI: number;
-  // idebAF: number;
+  situacaoFuncionamento: number;
+  dependenciaAdministrativa: number;
+  idebAI: number;
+  idebAF: number;
   enemMediaGeral: number;
   situacaoFuncionamentoTxt: SituacaoFuncionamentoTxt;
   dependenciaAdministrativaTxt: DependenciaAdministrativaTxt;
@@ -74,9 +74,13 @@ export async function buscaEscolas(
   const response = await fetch(
     ESCOLAS_ENDPOINT +
       `escolas/buscaavancada?nome=${nome}&estado=${estado.sigla}` +
-      (cidade && `&municipio=${cidade.id}`)
+      (cidade != null && `&municipio=${cidade.id}`)
   );
-  const data: Array<Escola> = await response.json()[1];
+  // const data: Array<Escola> = await response.json()[1];
 
-  return data;
+  const data = await response.json();
+
+  const escolas = data[1] as Array<Escola>;
+
+  return escolas;
 }

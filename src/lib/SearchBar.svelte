@@ -7,13 +7,17 @@
 
   let value = "";
 
-  $: setValue(value);
+  const search = () => setValue(value);
 </script>
 
-<div class="searchbox" class:disabled>
+<div
+  class="searchbox"
+  class:disabled
+  on:keydown={(e) => e.key == "Enter" && search()}
+>
   <input bind:value type="text" placeholder={title} {disabled} />
 
-  <button {disabled}>
+  <button {disabled} on:click={search}>
     <img class="icon" src={searchSVG} alt="" draggable="false" />
   </button>
 </div>
@@ -23,14 +27,14 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 
     background: #343434;
 
     height: 1.5rem;
     border-radius: 2rem;
 
-    padding: 1rem;
+    padding: 1rem 2rem;
 
     input[type="text"] {
       font-size: 1.2rem;
